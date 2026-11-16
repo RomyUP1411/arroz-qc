@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Don Manuel · Control de calidad</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- LOGIN (CU-01) -->
+  <section id="v-login" class="login">
+    <form id="f-login" class="card login-card">
+      <div class="brand"><span class="logo">Ø</span><div><b>Don Manuel</b><small>Control de calidad</small></div></div>
+      <h1>Iniciar sesión</h1>
+      <label>Correo<input type="email" id="l-email" required value="operario@donmanuel.pe" /></label>
+      <label>Contraseña<input type="password" id="l-pass" required minlength="8" maxlength="20" value="demo1234" /></label>
+      <label>Rol (demo)
+        <select id="l-rol">
+          <option>Operario</option>
+          <option>Administrador</option>
+          <option value="Productor">Productor (Juan Pérez)</option>
+        </select>
+      </label>
+      <p id="l-err" class="err"></p>
+      <button class="btn">Ingresar</button>
+      <small class="muted">Prototipo: cualquier correo y contraseña de 8–20 caracteres.</small>
+    </form>
+  </section>
+
+  <!-- APP -->
+  <div id="v-app" class="app hidden">
+    <aside class="side">
+      <div class="brand"><span class="logo">Ø</span><div><b>Don Manuel</b><small>Control de calidad</small></div></div>
+      <nav id="nav"></nav>
+      <button id="reset" class="reset">Restablecer datos demo</button>
+    </aside>
+    <main>
+      <header class="top">
+        <span>Planta de pilado</span>
+        <div><span id="rol" class="pill"></span> <a href="#" id="logout">Cerrar sesión</a></div>
+      </header>
+
+      <!-- CONFIGURAR LOTE (CU-04) -->
+      <section id="s-config" class="screen">
+        <h1>Configurar lote</h1>
+        <p class="muted">Selecciona un lote pendiente y revisa los valores de referencia.</p>
+        <div class="card row">
+          <label>Lote<select id="c-lote"></select></label>
+          <div><small class="muted">Variedad</small><h3 id="c-var">-</h3></div>
+          <div><small class="muted">Calidad objetivo</small><h3 id="c-cal">-</h3></div>
+          <div><small class="muted">Productor</small><h3 id="c-prod">-</h3></div>
+          <span class="pill warn grow0">Pendiente</span>
+        </div>
+        <div class="card">
+          <h3>Parámetros de calidad</h3>
+          <p class="muted">Puedes ajustar los valores precargados antes de confirmar.</p>
+          <div class="row">
+            <label>Máx. quebrados (%)<input type="number" id="c-q" step="0.1" value="8" /></label>
+            <label>Máx. tizosos (%)<input type="number" id="c-t" step="0.1" value="4" /></label>
+            <label>Intervalo de muestreo (min)<input type="number" id="c-i" value="10" min="1" /></label>
+          </div>
+          <p id="c-err" class="err"></p>
+        </div>
+        <div class="foot"><span class="muted">El lote pasará a En proceso al guardar.</span><button id="c-save" class="btn">Guardar e iniciar</button></div>
+      </section>
+
+      <!-- MONITOREO (CU-05) -->
+      <section id="s-mon" class="screen hidden">
+        <div class="foot"><h1>Monitoreo de calidad</h1><span id="m-estado" class="pill ok">En proceso</span></div>
+        <p class="muted" id="m-sub">Configura un lote primero.</p>
+
+        <div class="card row tight">
+          <div><small class="muted">Última muestra</small><h3 id="m-ult">–</h3></div>
+          <div><small class="muted">Intervalo</small><h3 id="m-int">–</h3></div>
+          <div><small class="muted">Próxima toma</small><h3 id="m-prox">–</h3></div>
+          <div><small class="muted">Muestras analizadas</small><h3 id="m-n">–</h3></div>
+        </div>
+
+        <div class="grid2">
+          <div class="card"><h3>Granos quebrados</h3><div class="kpi"><b id="k-q">–</b><small id="k-ql"></small></div><svg id="g-q" class="chart" viewBox="0 0 320 120"></svg></div>
+          <div class="card"><h3>Granos tizosos</h3><div class="kpi"><b id="k-t">–</b><small id="k-tl"></small></div><svg id="g-t" class="chart" viewBox="0 0 320 120"></svg></div>
+        </div>
+
+        <div class="card">
+          <h3>Alertas del lote</h3>
+          <div id="m-alerts"><p class="muted">Sin alertas.</p></div>
+        </div>
+
+        <div class="card">
+          <h3>Nueva muestra</h3>
+          <p class="muted">Sube o toma la foto de la muestra, o elige una foto de ejemplo.</p>
+          <div class="gal" id="m-gal"></div>
+          <div class="row">
+            <input type="file" id="m-file" accept="image/*" capture="environment" />
+            <button id="m-run" class="btn grow0" disabled>Analizar muestra</button>
+          </div>
+          <p id="m-msg" class="muted"></p>
+          <div id="m-det" class="det hidden"></div>
+        </div>
+
+        <div class="card">
+          <div class="foot"><h3>Muestras del lote</h3><button id="m-fin" class="btn ghost sm">Finalizar lote</button></div>
+          <div class="scroll"><table><thead><tr><th>Foto</th><th>Muestra</th><th>Hora</th><th>Granos</th><th>% Queb.</th><th>% Tiz.</th><th>Estado</th></tr></thead><tbody id="m-tabla"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- HISTORIAL (CU-02 / CU-03) -->
+      <section id="s-hist" class="screen hidden">
+        <h1>Historial de calidad</h1>
+        <p class="muted">Lotes procesados y evaluaciones por muestra.</p>
+        <div class="card">
+          <div class="row">
+            <label>Fecha inicial<input type="date" id="f-ini" value="2026-11-01" /></label>
+            <label>Fecha final<input type="date" id="f-fin" value="2026-11-30" /></label>
+            <label>Variedad<select id="f-var"></select></label>
+            <label id="f-prod-w">Productor<select id="f-prod"></select></label>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <label>Lote<select id="f-lote"></select></label>
+            <label>Nivel de incidencias
+              <select id="f-inc"><option value="">Todos</option><option value="0">Sin alertas</option><option value="1">Bajo (1)</option><option value="2">Medio (2)</option><option value="3">Alto (3+)</option></select>
+            </label>
+            <button id="f-btn" class="btn grow0">Filtrar</button>
+          </div>
+          <p id="f-err" class="err"></p>
+        </div>
+        <div class="grid4" id="h-kpis"></div>
+        <div class="card">
+          <h3>Lotes procesados</h3>
+          <div class="scroll"><table>
+            <thead><tr><th>Lote</th><th>Fecha</th><th>Variedad</th><th>Productor</th><th>Muestras</th><th>% Queb. prom.</th><th>% Tiz. prom.</th><th>Alertas</th><th>Acciones</th></tr></thead>
+            <tbody id="h-body"></tbody>
+          </table></div>
+          <p id="h-msg" class="muted"></p>
+        </div>
+        <div id="h-det" class="card hidden"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL ATENDER ALERTA (CU-06) -->
+  <dialog id="dlg">
+    <form method="dialog" class="dlg">
+      <div class="foot"><h2>Atender alerta</h2><span class="pill warn">En atención</span></div>
+      <p id="d-txt" class="warnbox"></p>
+      <label>¿Se realizó una calibración?
+        <select id="d-cal"><option value="si">Sí</option><option value="no">No</option></select>
+      </label>
+      <label>Maquinaria intervenida
+        <select id="d-maq"><option>Zaranda de pilado</option><option>Descascaradora</option><option>Pulidora</option><option>Mesa densimétrica</option></select>
+      </label>
+      <label>Descripción del ajuste<input id="d-desc" placeholder="Se ajustó la abertura de la zaranda." /></label>
+      <div class="foot"><button value="cancel" class="btn ghost">Cancelar</button><button value="ok" class="btn">Confirmar cierre</button></div>
+    </form>
+  </dialog>
+
+  <!-- VISOR DE FOTO -->
+  <dialog id="foto" class="foto"><form method="dialog"><img id="foto-img" alt="Muestra" /><p id="foto-txt" class="muted"></p><button class="btn">Cerrar</button></form></dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "arroz-qc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Prototipo de control de calidad de arroz pilado (Molino Don Manuel) con análisis por OpenAI",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
