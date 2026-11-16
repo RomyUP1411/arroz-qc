@@ -108,17 +108,51 @@ $("m-gal").querySelectorAll("img").forEach((img) => (img.onclick = async () => {
   ejemploSel = img.dataset.e;
   thumbSel = `/ejemplos/${ejemploSel}`;
   imagenDataUrl = await comprimir(await (await fetch(thumbSel)).blob());
+  $("m-prev").classList.add("hidden");
   $("m-run").disabled = !loteActivo();
 }));
 
-$("m-file").onchange = async (e) => {
-  const f = e.target.files[0];
-  if (!f) return;
+// Foto propia (archivo o cámara) → lista para analizar
+async function usarFoto(blob) {
   $("m-gal").querySelectorAll("img").forEach((x) => x.classList.remove("sel"));
   ejemploSel = null;
-  imagenDataUrl = await comprimir(f);
-  thumbSel = await comprimir(f, 480, 0.7); // copia pequeña para guardar en el historial
+  imagenDataUrl = await comprimir(blob);
+  thumbSel = await comprimir(blob, 480, 0.7); // copia pequeña para guardar en el historial
+  $("m-prev").src = thumbSel;
+  $("m-prev").classList.remove("hidden");
   $("m-run").disabled = !loteActivo();
+}
+
+$("m-pick").onclick = () => $("m-file").click();
+$("m-file").onchange = (e) => { if (e.target.files[0]) usarFoto(e.target.files[0]); e.target.value = ""; };
+$("m-file-cam").onchange = (e) => { if (e.target.files[0]) usarFoto(e.target.files[0]); e.target.value = ""; };
+
+// Cámara: webcam en PC / cámara trasera en celular. Si el navegador no lo permite, abre la cámara nativa.
+let camStream = null;
+$("m-cam").onclick = async () => {
+  if (!navigator.mediaDevices?.getUserMedia) return $("m-file-cam").click();
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 } }, audio: false });
+    $("cam-video").srcObject = camStream;
+    $("cam-box").classList.remove("hidden");
+    $("m-msg").textContent = "";
+  } catch (e) {
+    $("m-msg").textContent = "⚠ No se pudo abrir la cámara (" + (e.name === "NotAllowedError" ? "permiso denegado" : e.message) + "). Usa Seleccionar archivo.";
+  }
+};
+function cerrarCamara() {
+  camStream?.getTracks().forEach((t) => t.stop());
+  camStream = null;
+  $("cam-box").classList.add("hidden");
+}
+$("cam-close").onclick = cerrarCamara;
+$("cam-shot").onclick = () => {
+  const v = $("cam-video");
+  if (!v.videoWidth) return;
+  const c = document.createElement("canvas");
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  c.getContext("2d").drawImage(v, 0, 0);
+  c.toBlob((blob) => { cerrarCamara(); usarFoto(blob); }, "image/jpeg", 0.9);
 };
 
 // Reduce la imagen (máx. 1600 px) para no superar el límite de 4.5 MB de Vercel
@@ -162,6 +196,7 @@ $("m-run").onclick = async () => {
     save();
 
     $("m-msg").textContent = res.modo === "demo" ? "Analizado en modo demo (sin API key)." : "Analizado con OpenAI.";
+    $("m-prev").classList.add("hidden");
     if (res.alertas.length) beep();
     pintarMonitoreo();
     mostrarDetalle(m, l);

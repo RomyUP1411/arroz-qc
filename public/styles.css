@@ -109,3 +109,7 @@ tr.sel td { background: #f3f8f5; }
   #h-det { border: 0; }
 }
 @media (max-width: 720px) { .side .reset { display: none; } }
+.acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.acciones .btn { flex: 1 1 150px; }
+.cam { margin-top: 12px; }
+.cam video { width: 100%; max-width: 640px; border-radius: 8px; background: #000; display: block; margin-bottom: 8px; }

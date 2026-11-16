@@ -90,10 +90,21 @@
           <h3>Nueva muestra</h3>
           <p class="muted">Sube o toma la foto de la muestra, o elige una foto de ejemplo.</p>
           <div class="gal" id="m-gal"></div>
-          <div class="row">
-            <input type="file" id="m-file" accept="image/*" capture="environment" />
-            <button id="m-run" class="btn grow0" disabled>Analizar muestra</button>
+          <div class="acciones">
+            <button id="m-pick" class="btn ghost">Seleccionar archivo</button>
+            <button id="m-cam" class="btn ghost">Usar cámara</button>
+            <button id="m-run" class="btn" disabled>Analizar muestra</button>
           </div>
+          <input type="file" id="m-file" accept="image/*" hidden />
+          <input type="file" id="m-file-cam" accept="image/*" capture="environment" hidden />
+          <div id="cam-box" class="cam hidden">
+            <video id="cam-video" autoplay playsinline muted></video>
+            <div class="acciones">
+              <button id="cam-shot" class="btn">Capturar foto</button>
+              <button id="cam-close" class="btn ghost">Cerrar cámara</button>
+            </div>
+          </div>
+          <img id="m-prev" class="prev hidden" alt="Foto seleccionada" />
           <p id="m-msg" class="muted"></p>
           <div id="m-det" class="det hidden"></div>
         </div>

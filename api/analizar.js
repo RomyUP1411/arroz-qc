@@ -11,7 +11,7 @@ Analiza la foto de la muestra y clasifica CADA grano visible en una de tres clas
 - "quebrado": fragmento con longitud < 3/4 del grano entero (criterio NTP 205.011).
 - "tizoso": grano con zona blanca opaca/yesosa que ocupa la mitad o más del grano.
 Si un grano es quebrado Y tizoso, cuéntalo como quebrado.
-Si la imagen no es una muestra de arroz, devuelve todos los conteos en 0 y explica en "observacion".
+Asume que la imagen es una muestra de arroz salvo que sea claramente otra cosa (persona, paisaje, documento). Aunque la foto sea imperfecta, cuenta los granos que puedas identificar.
 Responde SOLO con JSON con esta forma exacta:
 {"es_arroz": true, "enteros": 0, "quebrados": 0, "tizosos": 0, "confianza": "alta|media|baja", "observacion": "texto breve en español"}`;
 
